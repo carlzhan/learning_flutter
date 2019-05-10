@@ -1,16 +1,11 @@
-# flutter_app
+# Flutter学习
 
-A new Flutter application.
+### 以下例子都在的源码都在GitHub上
 
-## Getting Started
+[Flutter初次编译报错](https://blog.csdn.net/Qyuewei/article/details/90073294)
 
-This project is a starting point for a Flutter application.
+[flutter混淆编译生成releaseAPK文件](https://blog.csdn.net/Qyuewei/article/details/90073735)
 
-A few resources to get you started if this is your first Flutter project:
+[布局和ListView的使用可以看刚哥的文章](https://juejin.im/post/5bd54b7be51d456c430e35f6#heading-1)
 
-- [Lab: Write your first Flutter app](https://flutter.io/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.io/docs/cookbook)
-
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.io/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+[ListView进阶，上拉加载](https://juejin.im/post/5b3abfc4518825622c14a6f1)
