@@ -1,305 +1,181 @@
 import 'package:flutter/material.dart';
-import 'package:english_words/english_words.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
-  final buildings = [
-    Building(BuildingType.theater, 'CineArts at the Empire', '85 W Portal Ave'),
-    Building(BuildingType.theater, 'CineArts at the Empire', '85 W Portal Ave'),
-    Building(BuildingType.theater, 'CineArts at the Empire', '85 W Portal Ave'),
-    Building(BuildingType.theater, 'CineArts at the Empire', '85 W Portal Ave'),
-    Building(BuildingType.theater, 'CineArts at the Empire', '85 W Portal Ave'),
-    Building(BuildingType.theater, 'CineArts at the Empire', '85 W Portal Ave'),
-    Building(BuildingType.theater, 'CineArts at the Empire', '85 W Portal Ave'),
-    Building(BuildingType.theater, 'CineArts at the Empire', '85 W Portal Ave'),
-    Building(BuildingType.theater, 'CineArts at the Empire', '85 W Portal Ave'),
-    Building(BuildingType.theater, 'CineArts at the Empire', '85 W Portal Ave'),
-    Building(BuildingType.theater, 'CineArts at the Empire', '85 W Portal Ave'),
-    Building(BuildingType.theater, 'CineArts at the Empire', '85 W Portal Ave'),
-
-
-  ];
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Navigation',
       theme: new ThemeData(
-        primaryColor: Colors.white,
+        primaryColor: Colors.blue,
       ),
-      home: Scaffold(
-          body: Column(
-            children: <Widget>[
-              TopBanner(),
-              _TitleSection('title', 'subtitle', '3'),
-              _ButtonSection(),
-              Expanded(
-                child: BuildListView(),
-              )
-            ],
-          )),
+//      home: HomePage(), // 使用routes则改为initialRoute: '/',
+      initialRoute: '/',
+      routes: <String, WidgetBuilder>{
+        '/': (BuildContext context) => new Home(),
+        '/second': (BuildContext context) =>
+        new SecondPage(Params('router (2)', 'subTitle (2)'))
+      },
     );
   }
 }
 
-class _ButtonSection extends StatelessWidget {
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: <Widget>[
-          _buildButtonColumn(context, Icons.call, 'CALL'),
-          _buildButtonColumn(context, Icons.near_me, 'ROUTE'),
-          _buildButtonColumn(context, Icons.share, 'SHARE'),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildButtonColumn(BuildContext context, IconData icon, String label) {
-    final color = Colors.red;
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Icon(icon, color: color,),
-        Container(
-          margin: EdgeInsets.only(top: 8.0),
-          child: Text(
-            label,
-            style: TextStyle(
-                fontSize: 12.0,
-                fontWeight: FontWeight.bold,
-                color: color
-            ),
-          ),
-        )
-      ],
-    );
-  }
-
-}
-
-class _TitleSection extends StatelessWidget {
+class Params {
   final title;
   final subTitle;
-  final startCount;
 
-  _TitleSection(this.title, this.subTitle, this.startCount);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(32),
-      child: Row(
-        children: <Widget>[
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: Text(
-                    title,
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-                Text(
-                  subTitle,
-                  style: TextStyle(color: Colors.grey[500]),
-                )
-              ],
-            ),
-          ),
-          Icon(
-            Icons.star,
-            color: Colors.red[500],
-          ),
-          Text(
-              startCount.toString()
-          )
-        ],
-      ),
-
-    );
-  }
+  Params(this.title, this.subTitle);
 }
 
-class TopBanner extends StatefulWidget {
+class Home extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return TopBannerState();
+    // TODO: implement createState
+    return HomeState();
   }
 }
 
-class TopBannerState extends State<TopBanner> {
-  @override
-  Widget build(BuildContext context) {
-    return Image.asset(
-      'images/lake.jpg',
-      height: 240.0,
-      // cover 类似于 Android 开发中的 centerCrop，其他一些类型，读者可以查看 
-      // https://docs.flutter.io/flutter/painting/BoxFit-class.html
-      fit: BoxFit.cover,
-    );
-  }
-}
-
-enum BuildingType { theater, restaurant }
-
-class Building {
-  final BuildingType type;
-  final String title;
-  final String address;
-
-  Building(this.type, this.title, this.address);
-}
-
-typedef OnItemClickListener = void Function(int position);
-
-class ItemView extends StatelessWidget {
-  final int position;
-  final String title;
-  final OnItemClickListener listener;
-
-  ItemView(this.position, this.title, this.listener);
+class HomeState extends State<Home> {
+  Params params = new Params('value from home page', 'subTitle');
+  String defaultValue = '第一种路由跳转方式';
+  final List<Widget> _children = [HomeNavigator(), PlaceholderWidget('Tab2')];
+  int _curChildren = 0;
 
   @override
   Widget build(BuildContext context) {
-    final icon = Icon(
-      Icons.restaurant,
-      color: Colors.blue[500],
-    );
-
-    final widget = Row(
-      children: <Widget>[
-        Container(
-          margin: EdgeInsets.all(16.0),
-          child: icon,
-        ),
-        Expanded(child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 20.0,
-                fontWeight: FontWeight.bold,
-              ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Home Page'),
+      ),
+      // 该段body为HomePage的tab页面
+      body: _children[_curChildren],
+      bottomNavigationBar: BottomNavigationBar(
+          onTap: _onTabSwitch,
+          currentIndex: _curChildren,
+          items: [
+            BottomNavigationBarItem(
+              title: Text('Home'),
+              icon: Icon(Icons.home),
             ),
-            Text(
-                title
+            BottomNavigationBarItem(
+              title: Text('My'),
+              icon: Icon(Icons.person),
             )
-          ],
-        ))
-      ],
-    );
-
-
-    return InkWell(
-      onTap: () => listener(position),
-      child: widget,
+          ]),
+//      放开此段为路由跳转
+//      body: Center(
+//        child: Column(
+//          children: <Widget>[
+//            RaisedButton(
+//                child: Text(defaultValue),
+//                onPressed: () async {
+//                  String result = await Navigator.push(context,
+//                      new MaterialPageRoute(
+//                          builder: (context) => SecondPage(params)));
+//                  if (result != null) {
+//                    debugPrint(result + '_____');
+//                    setState(() {
+//                      defaultValue = result;
+//                    });
+//                  }
+//                }),
+//            RaisedButton(
+//                child: Text('第二种路由跳转方式'),
+//                onPressed: ()async {
+//                  String result = await Navigator.of(context).pushNamed('/second');
+//                })
+//          ],
+//        ),
+//      ),
     );
   }
 
-}
-
-class BuildListView extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() {
-//    TODO
-    return BuildListViewState((index) =>
-        debugPrint('item $index clicked'));
+  void _onTabSwitch(int index) {
+    debugPrint('$index+_________');
+    setState(() {
+      _curChildren = index;
+    });
   }
-
 }
 
+class PlaceholderWidget extends StatelessWidget {
+  final title;
 
-class BuildListViewState extends State<BuildListView> {
-  List<int> items = List.generate(10, (i) => i);
-  final OnItemClickListener listener;
-
-  ScrollController _scrollController = new ScrollController();
-
-// 产生数据
-  bool isPerformingRequest = false; // 是否有请求正在进行
-
-  BuildListViewState(this.listener);
+  PlaceholderWidget(this.title);
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: items.length + 1,
-      itemBuilder: (context, index) {
-        if (index == items.length) {
-          return _buildProgressIndicator();
-        } else {
-          return ItemView(index, "Title $index", listener);
-        }
-      },
-      controller: _scrollController,
-
+    // TODO: implement build
+    return Center(
+      child: Text(title),
     );
   }
+}
 
-  Widget _buildProgressIndicator() {
-    return new Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
-          opacity: isPerformingRequest ? 1.0 : 0.0,
-          child: new CircularProgressIndicator(),
+class SecondPage extends StatelessWidget {
+  final Params params;
+
+  SecondPage(this.params);
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return Scaffold(
+      body: Center(
+        child: RaisedButton(
+            child: Text(params.title),
+            onPressed: () {
+              Navigator.pop(context, 'value from second page');
+            }),
+      ),
+    );
+  }
+}
+
+/**
+ * HomeNavigator 由Navigator组成
+ */
+class HomeNavigator extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return new Navigator(
+      initialRoute: 'home',
+      onGenerateRoute: (RouteSettings settings) {
+        WidgetBuilder builder;
+        switch (settings.name) {
+          case 'home':
+            builder = (BuildContext context) => new HomePage();
+            break;
+          case 'demo1':
+            builder =
+                (BuildContext context) => new SecondPage(Params('11', '22'));
+            break;
+          default:
+            throw new Exception('Invalid route: ${settings.name}');
+        }
+        return new MaterialPageRoute(builder: builder, settings: settings);
+      },
+    );
+  }
+}
+
+class HomePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+      appBar: new AppBar(
+        title: new Text('Tab1 home'),
+      ),
+      body: new Center(
+        child: new RaisedButton(
+          child: new Text('Tab1 中的Home'),
+          onPressed: () {
+            Navigator.of(context).pushNamed('demo1');
+          },
         ),
       ),
     );
   }
-
-  @override
-  void initState() {
-    super.initState();
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
-        _getMoreData();
-      }
-    });
-  }
-
-
-  /// 通过这个模拟http请求
-  Future<List<int>> fakeRequest(int from, int to) async {
-// 如果对Future不熟悉，可以参考 https://juejin.im/post/5b2c67a351882574a756f2eb
-    return Future.delayed(Duration(seconds: 2), () {
-      return List.generate(to - from, (i) => i + from);
-    });
-  }
-
-  _getMoreData() async {
-    if (!isPerformingRequest) { // 判断是否有请求正在执行
-      setState(() => isPerformingRequest = true);
-      List<int> newEntries = await fakeRequest(items.length, items.length);
-
-      if (newEntries.isEmpty) {
-        double edge = 50;
-        double offsetFromBottom = _scrollController.position.maxScrollExtent -
-            _scrollController.position.pixels;
-        if (offsetFromBottom < edge) {
-          _scrollController.animateTo(
-              _scrollController.offset - (edge - offsetFromBottom),
-              duration: new Duration(milliseconds: 500),
-              curve: Curves.easeOut);
-        }
-      }
-      setState(() {
-        items.addAll(newEntries);
-        isPerformingRequest = false; // 下一个请求可以开始了
-      });
-    }
-  }
-
 }
-
